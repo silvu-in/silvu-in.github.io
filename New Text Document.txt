@@ -1,3 +1,0 @@
-JSON.parse(localStorage.getItem("newsletterEmails"))
-
-JSON.parse(localStorage.getItem("contactMessages"))
