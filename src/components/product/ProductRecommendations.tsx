@@ -1,9 +1,8 @@
-
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
 import type { Product } from '@/types';
-import { handleGetProductRecommendations } from '@/lib/actions';
+import { handleGetProductRecommendations } from '../../lib/actions'; // ✅ FIXED HERE
 import { ProductCard } from './ProductCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
@@ -11,8 +10,8 @@ import { Button } from '../ui/button';
 import Image from 'next/image';
 
 interface ProductRecommendationsProps {
-  cartItems: { id: string; name: string }[]; 
-  displayType?: 'card' | 'list'; 
+  cartItems: { id: string; name: string }[];
+  displayType?: 'card' | 'list';
 }
 
 export function ProductRecommendations({ cartItems, displayType = 'card' }: ProductRecommendationsProps) {
@@ -28,7 +27,7 @@ export function ProductRecommendations({ cartItems, displayType = 'card' }: Prod
     } else {
       setRecommendations([]);
     }
-  }, [cartItems]); 
+  }, [cartItems]);
 
   if (isLoading) {
     return (
@@ -71,21 +70,23 @@ export function ProductRecommendations({ cartItems, displayType = 'card' }: Prod
           {recommendations.map(product => (
             <li key={product.id} className="p-3 rounded-md border hover:bg-accent/50 transition-colors">
               <Link href={`/products/${product.id}`} className="flex items-center space-x-3 group">
-                 <div className="relative h-16 w-16 overflow-hidden rounded-md bg-muted flex-shrink-0">
-                    <Image 
-                        src={product.imageUrl} 
-                        alt={product.name} 
-                        fill 
-                        sizes="64px" 
-                        className="object-cover group-hover:scale-105 transition-transform"
-                        data-ai-hint={product.dataAiHint}
-                    />
-                 </div>
-                 <div>
-                    <h4 className="font-medium group-hover:text-primary transition-colors">{product.name}</h4>
-                    <p className="text-sm text-muted-foreground">₹{Math.round(product.price)}</p> {/* Rounded price */}
-                 </div>
-                 <Button variant="outline" size="sm" className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">View</Button>
+                <div className="relative h-16 w-16 overflow-hidden rounded-md bg-muted flex-shrink-0">
+                  <Image
+                    src={product.imageUrl}
+                    alt={product.name}
+                    fill
+                    sizes="64px"
+                    className="object-cover group-hover:scale-105 transition-transform"
+                    data-ai-hint={product.dataAiHint}
+                  />
+                </div>
+                <div>
+                  <h4 className="font-medium group-hover:text-primary transition-colors">{product.name}</h4>
+                  <p className="text-sm text-muted-foreground">₹{Math.round(product.price)}</p>
+                </div>
+                <Button variant="outline" size="sm" className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                  View
+                </Button>
               </Link>
             </li>
           ))}
