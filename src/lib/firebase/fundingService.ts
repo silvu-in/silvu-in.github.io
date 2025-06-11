@@ -5,7 +5,7 @@ import type { FundingCampaign, Funder } from '@/types';
 import { format } from 'date-fns';
 
 const CAMPAIGNS_COLLECTION = 'fundingCampaigns';
-const DONATIONS_SUBCOLLECTION = 'donations';
+const FUND_COLLECTION = 'FUND'; // New top-level collection for funders
 
 // Helper to map Firestore document to FundingCampaign type
 function mapDocToFundingCampaign(document: any): FundingCampaign {
@@ -23,23 +23,26 @@ function mapDocToFundingCampaign(document: any): FundingCampaign {
 // Helper to map Firestore document to Funder type
 function mapDocToFunder(document: any): Funder {
   const data = document.data();
-  let fundedAtStr = 'Date not available';
-  if (data.fundedAt && data.fundedAt instanceof Timestamp) {
-    fundedAtStr = format(data.fundedAt.toDate(), 'MMMM d, yyyy');
-  } else if (typeof data.fundedAt === 'string') {
+  let dateStr = 'Date not available';
+  // Assuming 'date' field in Firestore is a Timestamp
+  if (data.date && data.date instanceof Timestamp) {
+    dateStr = format(data.date.toDate(), 'MMMM d, yyyy');
+  } else if (typeof data.date === 'string') { // Fallback if date is already a string
     try {
-      fundedAtStr = format(new Date(data.fundedAt), 'MMMM d, yyyy');
-    } catch (e) { /* Keep default */ }
+      dateStr = format(new Date(data.date), 'MMMM d, yyyy');
+    } catch (e) { /* Keep default if parsing fails */ }
   }
+
 
   return {
     id: document.id,
     name: data.name || 'Anonymous Funder',
     amount: data.amount || 0,
-    fundedAt: fundedAtStr,
-    avatarUrl: data.avatarUrl,
+    date: dateStr, // Use the 'date' field
+    avatarUrl: data.avatarUrl, // Keep existing avatar logic
     message: data.message,
-    dataAiHint: data.dataAiHint || 'person abstract', // Default hint for avatar
+    dataAiHint: data.dataAiHint || 'person abstract',
+    // accountDetails: data.accountDetails, // Not for public display
   };
 }
 
@@ -47,13 +50,6 @@ function mapDocToFunder(document: any): Funder {
  * Fetches details for a specific funding campaign.
  * @param campaignId The ID of the campaign document in Firestore.
  *                   Defaults to 'mainCampaign'.
- * You should create a document with this ID in your 'fundingCampaigns' collection.
- * It should contain fields like:
- * - goalAmount (number)
- * - currentAmount (number)
- * - campaignTitle (string)
- * - campaignDescription (string)
- * - currency (string, e.g., "INR")
  */
 export async function getCampaignDetails(campaignId: string = 'mainCampaign'): Promise<FundingCampaign | null> {
   try {
@@ -71,25 +67,24 @@ export async function getCampaignDetails(campaignId: string = 'mainCampaign'): P
 }
 
 /**
- * Fetches a list of recent funders for a specific campaign.
- * @param campaignId The ID of the campaign document. Defaults to 'mainCampaign'.
+ * Fetches a list of recent funders from the 'FUND' collection.
  * @param count The number of recent funders to fetch. Defaults to 10.
- * Assumes a subcollection named 'donations' under the campaign document.
- * Each document in 'donations' should have fields like:
+ * Each document in 'FUND' should have fields like:
  * - name (string)
  * - amount (number)
- * - fundedAt (Timestamp)
+ * - date (Timestamp)
  * - avatarUrl (string, optional)
  * - message (string, optional)
  */
-export async function getRecentFunders(campaignId: string = 'mainCampaign', count: number = 10): Promise<Funder[]> {
+export async function getRecentFunders(count: number = 10): Promise<Funder[]> {
   try {
-    const donationsRef = collection(db, CAMPAIGNS_COLLECTION, campaignId, DONATIONS_SUBCOLLECTION);
-    const q = query(donationsRef, orderBy('fundedAt', 'desc'), limit(count));
+    const fundersRef = collection(db, FUND_COLLECTION);
+    // Assuming 'date' is the field to order by and it's a Firestore Timestamp
+    const q = query(fundersRef, orderBy('date', 'desc'), limit(count));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(mapDocToFunder);
   } catch (error) {
-    console.error(`Error fetching recent funders for campaign ${campaignId}:`, error);
+    console.error(`Error fetching recent funders from ${FUND_COLLECTION}:`, error);
     return [];
   }
 }

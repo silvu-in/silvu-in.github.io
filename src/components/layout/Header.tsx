@@ -2,8 +2,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Menu, User } from 'lucide-react';
-import { Logo } from '@/components/icons/Logo';
+import { Menu, User, Mail } from 'lucide-react'; // Added Mail for Contact Us
+import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/button';
 import { CartIcon } from '@/components/cart/CartIcon';
 import { UserNav } from '@/components/auth/UserNav';
@@ -16,6 +16,7 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
+import { ThemeToggle } from './ThemeToggle';
 
 export function Header() {
   const { user, loading } = useAuth();
@@ -37,8 +38,7 @@ export function Header() {
               <SheetContent side="left" className="w-[280px] p-4 pt-8">
                  <div className="mb-6">
                   <Link href="/" className="flex items-center space-x-2">
-                    <Logo className="h-7 w-auto" />
-                    <span className="font-semibold text-lg">Silvu</span>
+                    <Logo className="text-2xl" /> 
                   </Link>
                 </div>
                 <nav className="flex flex-col space-y-1">
@@ -57,6 +57,11 @@ export function Header() {
                     </Link>
                   </SheetClose>
                   <SheetClose asChild>
+                    <Link href="/contact" className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground">
+                      Contact Us
+                    </Link>
+                  </SheetClose>
+                  <SheetClose asChild>
                     <Link href="/account" className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground">
                       Account
                     </Link>
@@ -66,8 +71,7 @@ export function Header() {
             </Sheet>
           </div>
           <Link href="/" className="flex items-center space-x-2">
-            <Logo className="h-8 w-auto" />
-            <span className="font-semibold text-lg hidden sm:inline-block">Silvu</span>
+            <Logo className="text-2xl" />
           </Link>
         </div>
 
@@ -87,9 +91,12 @@ export function Header() {
               Fund Now
             </Link>
           </Button>
+          <Button variant="link" asChild className="text-sm font-medium text-foreground/70 hover:text-primary px-3 py-2">
+            <Link href="/contact">Contact Us</Link>
+          </Button>
         </nav>
 
-        {/* Right Group: Search (conditionally hidden on mobile) + Cart + User */}
+        {/* Right Group: Search (conditionally hidden on mobile) + Cart + User + ThemeToggle */}
         <div className="flex items-center space-x-2">
           <div className="hidden sm:block"> {/* ProductSearch hidden on xs screens */}
             <ProductSearch />
@@ -107,6 +114,7 @@ export function Header() {
               </Link>
             </Button>
           )}
+          <ThemeToggle />
         </div>
 
       </div>

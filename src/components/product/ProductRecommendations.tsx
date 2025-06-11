@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
@@ -10,8 +11,8 @@ import { Button } from '../ui/button';
 import Image from 'next/image';
 
 interface ProductRecommendationsProps {
-  cartItems: { id: string; name: string }[]; // Simplified item structure
-  displayType?: 'card' | 'list'; // Default to card
+  cartItems: { id: string; name: string }[]; 
+  displayType?: 'card' | 'list'; 
 }
 
 export function ProductRecommendations({ cartItems, displayType = 'card' }: ProductRecommendationsProps) {
@@ -27,7 +28,7 @@ export function ProductRecommendations({ cartItems, displayType = 'card' }: Prod
     } else {
       setRecommendations([]);
     }
-  }, [cartItems]); // Re-fetch when cartItems change
+  }, [cartItems]); 
 
   if (isLoading) {
     return (
@@ -82,7 +83,7 @@ export function ProductRecommendations({ cartItems, displayType = 'card' }: Prod
                  </div>
                  <div>
                     <h4 className="font-medium group-hover:text-primary transition-colors">{product.name}</h4>
-                    <p className="text-sm text-muted-foreground">${product.price.toFixed(2)}</p>
+                    <p className="text-sm text-muted-foreground">₹{Math.round(product.price)}</p> {/* Rounded price */}
                  </div>
                  <Button variant="outline" size="sm" className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">View</Button>
               </Link>

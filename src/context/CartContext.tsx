@@ -36,28 +36,46 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, [cartItems]);
 
   const addToCart = (product: Product, quantityToAdd: number = 1) => {
-    setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item.id === product.id);
-      if (existingItem) {
-        const newQuantity = existingItem.quantity + quantityToAdd;
-        if (newQuantity > product.stock) {
-            toast({ title: "Stock limit reached", description: `Cannot add more ${product.name} to cart.`, variant: "destructive" });
-            return prevItems.map(item =>
-              item.id === product.id ? { ...item, quantity: product.stock } : item
-            );
-        }
-        toast({ title: "Item updated in cart", description: `${product.name} quantity increased.` });
-        return prevItems.map(item =>
-          item.id === product.id ? { ...item, quantity: newQuantity } : item
+    const existingItem = cartItems.find(item => item.id === product.id);
+
+    if (existingItem) {
+      const newQuantity = existingItem.quantity + quantityToAdd;
+      if (newQuantity > product.stock) {
+        toast({
+          title: "Stock limit reached",
+          description: `Cannot add more ${product.name} to cart. Only ${product.stock} available.`,
+          variant: "destructive"
+        });
+        // Update to max stock if user tries to add more
+        setCartItems(prevItems =>
+          prevItems.map(item =>
+            item.id === product.id ? { ...item, quantity: product.stock } : item
+          )
         );
+        return; 
       }
+      // If not exceeding stock, proceed to update quantity
+      setCartItems(prevItems =>
+        prevItems.map(item =>
+          item.id === product.id ? { ...item, quantity: newQuantity } : item
+        )
+      );
+      toast({ title: "Item updated in cart", description: `${product.name} quantity increased.` });
+    } else { // New item
       if (quantityToAdd > product.stock) {
-        toast({ title: "Stock limit reached", description: `Cannot add ${quantityToAdd} of ${product.name} to cart. Available: ${product.stock}`, variant: "destructive" });
-        return [...prevItems, { ...product, quantity: product.stock }];
+        toast({
+          title: "Stock limit reached",
+          description: `Cannot add ${quantityToAdd} of ${product.name}. Only ${product.stock} available.`,
+          variant: "destructive"
+        });
+        // Add with max stock
+        setCartItems(prevItems => [...prevItems, { ...product, quantity: product.stock }]);
+        return; 
       }
+      // Add new item
+      setCartItems(prevItems => [...prevItems, { ...product, quantity: quantityToAdd }]);
       toast({ title: "Item added to cart", description: `${product.name} has been added.` });
-      return [...prevItems, { ...product, quantity: quantityToAdd }];
-    });
+    }
   };
 
   const removeFromCart = (productId: string) => {
@@ -66,21 +84,35 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateQuantity = (productId: string, quantity: number) => {
+    const itemToUpdate = cartItems.find(item => item.id === productId);
+    if (!itemToUpdate) return;
+
+    if (quantity <= 0) {
+      removeFromCart(productId); // This will also trigger its own toast
+      return;
+    }
+
+    if (quantity > itemToUpdate.stock) {
+      toast({
+        title: "Stock limit reached",
+        description: `Max quantity for ${itemToUpdate.name} is ${itemToUpdate.stock}.`,
+        variant: "destructive"
+      });
+      setCartItems(prevItems =>
+        prevItems.map(item =>
+          item.id === productId ? { ...item, quantity: itemToUpdate.stock } : item
+        )
+      );
+      return;
+    }
+
     setCartItems(prevItems =>
-      prevItems.map(item => {
-        if (item.id === productId) {
-          if (quantity <= 0) {
-            return null; // Will be filtered out
-          }
-          if (quantity > item.stock) {
-            toast({ title: "Stock limit reached", description: `Max quantity for ${item.name} is ${item.stock}.`, variant: "destructive" });
-            return { ...item, quantity: item.stock };
-          }
-          return { ...item, quantity };
-        }
-        return item;
-      }).filter(Boolean) as CartItem[]
+      prevItems.map(item =>
+        item.id === productId ? { ...item, quantity } : item
+      )
     );
+    // No toast for a simple successful quantity update, as the UI reflects the change.
+    // Toasts are primarily for validation errors or explicit actions like add/remove.
   };
 
   const clearCart = () => {

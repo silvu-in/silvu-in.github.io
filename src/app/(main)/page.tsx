@@ -1,10 +1,35 @@
 
-import { FeaturedProducts } from '@/components/product/FeaturedProducts';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import dynamic from 'next/dynamic';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const FeaturedProductsSkeleton = () => (
+  <section className="py-12">
+    <div className="flex justify-between items-center mb-8">
+      <Skeleton className="h-8 w-1/3 rounded-md" />
+      <Skeleton className="h-10 w-32 rounded-md" />
+    </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {[...Array(4)].map((_, i) => (
+        <div key={i} className="space-y-3">
+          <Skeleton className="h-[200px] w-full rounded-xl" />
+          <Skeleton className="h-6 w-3/4 rounded-md" />
+          <Skeleton className="h-4 w-1/2 rounded-md" />
+          <Skeleton className="h-10 w-full rounded-md" />
+        </div>
+      ))}
+    </div>
+  </section>
+);
+
+const FeaturedProducts = dynamic(() =>
+  import('@/components/product/FeaturedProducts').then(mod => mod.FeaturedProducts),
+  { loading: () => <FeaturedProductsSkeleton /> }
+);
 
 export default function HomePage() {
   return (
@@ -12,19 +37,19 @@ export default function HomePage() {
       <section className="relative bg-muted/40 py-16 sm:py-24 lg:py-32 rounded-xl overflow-hidden mb-12">
         <div className="absolute inset-0">
             <Image 
-                src="/home/user/studio/src/components/image/1200x600.jpg" 
-                alt="Hero background with drones"
+                src="https://ik.imagekit.io/Silvu1704/lilian-velet-oHY0NfxZsJc-unsplash.jpg?updatedAt=1749640340773"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                alt="Sky background for hero section"
                 fill
-                sizes="(max-width: 768px) 100vw, 1200px"
                 className="object-cover opacity-20"
-                data-ai-hint="drone detail"
+                data-ai-hint="sky background"
                 priority
             />
              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
         </div>
         <div className={cn('w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center')}>
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl font-headline">
-            Silvu: Innovating <span className="text-primary">Drone</span> Technology
+            SILVU: Innovating <span className="text-primary">Drone</span> Technology
           </h1>
           <p className="mt-6 max-w-2xl mx-auto text-lg text-foreground/80 sm:text-xl">
             Discover the latest in drone technology, parts, and accessories. Elevate your flight experience with Silvu.
@@ -64,13 +89,13 @@ export default function HomePage() {
             </div>
             <div className="rounded-lg overflow-hidden shadow-lg">
                 <Image 
-                    src="https://placehold.co/1200x600.png" 
-                    alt="Drone in action" 
+                    src="https://ik.imagekit.io/Silvu1704/Black%20and%20White%20Abstract%20Tech%20General%20Linkedin%20Banner.png?updatedAt=1749641819786" 
+                    alt="Abstract technology background" 
                     width={1200} 
                     height={600} 
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                     className="object-cover w-full h-full"
-                    data-ai-hint="drone detail"
+                    data-ai-hint="abstract tech"
                 />
             </div>
           </div>

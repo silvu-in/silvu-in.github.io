@@ -88,7 +88,7 @@ export async function seedTestBlogPost(): Promise<string> {
     excerpt: 'A demonstration of seeding blog content into Firebase Firestore from the application code for testing purposes.',
     author: 'Dev Seed Script',
     publishedDate: Timestamp.fromDate(new Date(2024, 4, 15)), // Month is 0-indexed, so 4 is May
-    imageUrl: 'https://placehold.co/800x450.png',
+    imageUrl: 'https://placehold.co/801x451.png', // Changed
     dataAiHint: 'code database',
   };
 

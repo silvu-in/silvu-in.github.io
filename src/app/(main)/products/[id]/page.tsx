@@ -5,11 +5,13 @@ import { ProductImage } from '@/components/product/ProductImage';
 import { AddToCartButton } from '@/components/cart/AddToCartButton';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { ProductRecommendations } from '@/components/product/ProductRecommendations';
-import { ProductList } from '@/components/product/ProductList';
+// import { ProductRecommendations } from '@/components/product/ProductRecommendations'; // Replaced with dynamic import
+import { ClientProductRecommendations } from '@/components/product/ClientProductRecommendations'; // Import the new client component
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import type { Product } from '@/types';
+import dynamic from 'next/dynamic';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export const revalidate = 60; // Revalidate data every 60 seconds
 
@@ -37,8 +39,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
     notFound();
   }
   
-  // For related products, show other products from the same category, excluding the current one
-  const allDbProducts = await getAllProducts(); // Fetch all products to filter related ones
+  const allDbProducts = await getAllProducts(); 
   const relatedProducts = allDbProducts.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
 
   return (
@@ -52,13 +53,13 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
             height={450} 
             className="rounded-xl shadow-lg" 
             data-ai-hint={product.dataAiHint}
-            priority={true} // LCP Image
+            priority={true} 
           />
         </div>
         <div>
           <Badge variant="outline" className="mb-2">{product.category}</Badge>
           <h1 className="text-3xl lg:text-4xl font-bold mb-3 font-headline">{product.name}</h1>
-          <p className="text-2xl font-semibold text-primary mb-4">${product.price.toFixed(2)}</p>
+          <p className="text-2xl font-semibold text-primary mb-4">₹{Math.round(product.price)}</p> {/* Rounded price */}
           <Separator className="my-4" />
           <p className="text-muted-foreground leading-relaxed mb-6">{product.description}</p>
           
@@ -78,8 +79,8 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
 
       <div>
         <h2 className="text-2xl font-bold mb-6">Product Recommendations</h2>
-        {/* ProductRecommendations uses a server action that now fetches from DB */}
-        <ProductRecommendations cartItems={[{ id: product.id, name: product.name }]} displayType="list" />
+        {/* Use the new client component for recommendations */}
+        <ClientProductRecommendations cartItems={[{ id: product.id, name: product.name }]} displayType="list" />
       </div>
       
       {relatedProducts.length > 0 && (
@@ -87,7 +88,6 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
           <Separator className="my-12" />
           <div>
             <h2 className="text-2xl font-bold mb-6">Related Products</h2>
-            <ProductList products={relatedProducts} />
           </div>
         </>
       )}
@@ -96,7 +96,6 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
 }
 
 export async function generateStaticParams() {
-  // Fetch all product IDs from Firestore for static generation
   const productIds = await getAllProductIds(); 
   return productIds.map((item) => ({
     id: item.id,

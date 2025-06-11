@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -49,7 +50,7 @@ export function CartItemCard({ item }: CartItemCardProps) {
         <Link href={`/products/${item.id}`} className="font-medium hover:underline">
           {item.name}
         </Link>
-        <p className="text-sm text-muted-foreground">${item.price.toFixed(2)}</p>
+        <p className="text-sm text-muted-foreground">₹{Math.round(item.price)}</p> {/* Rounded price */}
         <div className="flex items-center space-x-2 mt-2">
           <Button
             variant="outline"
@@ -79,7 +80,7 @@ export function CartItemCard({ item }: CartItemCardProps) {
         </div>
       </div>
       <div className="flex flex-col items-end space-y-1">
-         <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
+         <p className="font-medium">₹{Math.round(item.price * item.quantity)}</p> {/* Rounded total for item */}
         <Button
           variant="ghost"
           size="icon"

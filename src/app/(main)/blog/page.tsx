@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
 import { getBlogPosts } from '@/lib/firebase/blogService';
 import type { BlogPost } from '@/types';
-import { SeedPostButton } from '@/components/blog/SeedPostButton';
 
 export const revalidate = 60; // Revalidate data every 60 seconds
 
@@ -22,11 +21,6 @@ export default async function BlogPage() {
             News, insights, and updates from the Silvu team.
           </p>
         </div>
-        {process.env.NODE_ENV === 'development' && (
-          <div className="flex-shrink-0">
-            <SeedPostButton />
-          </div>
-        )}
       </div>
 
       {posts.length > 0 ? (
@@ -51,9 +45,7 @@ export default async function BlogPage() {
             <h2 className="text-2xl font-semibold">No Posts Yet!</h2>
             <p className="text-muted-foreground mt-2">
               Our blog is under construction or no posts have been published.
-              {process.env.NODE_ENV === 'development' 
-                ? " Try clicking the 'Seed Test Blog Post' button to add a sample post." 
-                : " Check back later for exciting updates!"}
+              Check back later for exciting updates!
             </p>
         </div>
       )}

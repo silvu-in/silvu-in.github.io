@@ -19,6 +19,7 @@ export function FundersList({ funders, currency = "INR" }: FundersListProps) {
     if (names.length > 1 && names[0] && names[names.length -1]) {
       return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
     }
+    if (!name) return 'A'; // Anonymous
     return name.substring(0, 2).toUpperCase();
   };
 
@@ -33,7 +34,7 @@ export function FundersList({ funders, currency = "INR" }: FundersListProps) {
             Be the first to support this campaign!
             <br />
             <span className="text-xs mt-1 block">
-              If your name is not showing after a contribution, please wait 1-2 days for it to appear, or contact support.
+              If your name is not showing after a contribution, please allow some time for it to appear, or contact support.
             </span>
           </p>
         </CardContent>
@@ -58,7 +59,7 @@ export function FundersList({ funders, currency = "INR" }: FundersListProps) {
                 <div className="flex-1">
                   <p className="font-semibold text-sm">{funder.name}</p>
                   <p className="text-xs text-muted-foreground">
-                    Contributed {formatCurrency(funder.amount)} on {funder.fundedAt}
+                    Contributed {formatCurrency(funder.amount)} on {funder.date}
                   </p>
                   {funder.message && <p className="text-xs italic text-muted-foreground mt-1">"{funder.message}"</p>}
                 </div>

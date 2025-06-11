@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { ShieldCheck } from 'lucide-react'; // CreditCard icon removed
+import { ShieldCheck } from 'lucide-react'; 
 import { QRCodeSVG } from 'qrcode.react';
 import {
   AlertDialog,
@@ -19,7 +19,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-const UPI_PAYMENT_STRING = "upi://pay?pa=6202336939@fam&pn=Krish Verma";
+const UPI_PAYMENT_STRING = "upi://pay?pa=6202336939@fam&pn=Krish Verma&cu=INR"; // Added &cu=INR
 
 export function FundingForm() {
   const [amount, setAmount] = useState('');
@@ -39,17 +39,17 @@ export function FundingForm() {
 
     if (method === 'UPI') {
       const parsedAmount = parseFloat(amount).toFixed(2);
-      if (UPI_PAYMENT_STRING.includes('&am=')) {
-        setUpiUriWithAmount(UPI_PAYMENT_STRING.replace(/&am=[\d.]+/, `&am=${parsedAmount}`));
-      } else if (UPI_PAYMENT_STRING.includes('?am=')) {
-         setUpiUriWithAmount(UPI_PAYMENT_STRING.replace(/\?am=[\d.]+/, `?am=${parsedAmount}`));
+      let baseUpiString = UPI_PAYMENT_STRING;
+      if (baseUpiString.includes('&am=')) {
+        setUpiUriWithAmount(baseUpiString.replace(/&am=[\d.]+/, `&am=${parsedAmount}`));
+      } else if (baseUpiString.includes('?am=')) {
+         setUpiUriWithAmount(baseUpiString.replace(/\?am=[\d.]+/, `?am=${parsedAmount}`));
       }
       else {
-         setUpiUriWithAmount(`${UPI_PAYMENT_STRING}&am=${parsedAmount}`);
+         setUpiUriWithAmount(`${baseUpiString}&am=${parsedAmount}`);
       }
       setShowUpiQrDialog(true);
     } 
-    // Card payment logic removed
   };
 
   return (
@@ -78,11 +78,6 @@ export function FundingForm() {
               <Button onClick={() => handleFund('UPI')} size="lg" className="w-full">
                   <ShieldCheck className="mr-2 h-5 w-5" /> Fund with UPI
               </Button>
-              {/* Card/Netbanking button removed
-              <Button onClick={() => handleFund('Card')} variant="outline" size="lg" className="w-full">
-                  <CreditCard className="mr-2 h-5 w-5" /> Fund with Card/Netbanking
-              </Button>
-              */}
           </div>
         </CardContent>
         <CardFooter>
@@ -105,14 +100,11 @@ export function FundingForm() {
           </div>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setShowUpiQrDialog(false)}>Close</AlertDialogCancel>
-            {/* <AlertDialogAction onClick={() => {
-                setShowUpiQrDialog(false);
-                toast({ title: "Payment Initiated", description: "Waiting for UPI payment confirmation (mock)." });
-                setAmount('');
-            }}>Paid</AlertDialogAction> */}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </>
   );
 }
+
+    
